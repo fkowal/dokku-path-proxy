@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -eo pipefail; [[ $DOKKU_TRACE ]] && set -x
 APP=$1
-CONF="/etc/nginx/sites_available/default"
+CONF="/etc/nginx/sites-available/default"
 sed -i "/#$APP-start/,/#$APP-end/d" $CONF
 sudo /etc/init.d/nginx reload > /dev/null

@@ -3,15 +3,16 @@
 #[[ $DOKKU_TRACE ]] && set -x
 
 APP="$1"; PORT="$2"
-NGINX_CONF="/etc/nginx/sites_available/default"
+NGINX_CONF="/etc/nginx/sites-available/default"
 STR="$APP-start"
 grep "#$STR" $NGINX_CONF > /dev/null
 
 if [ "1" = "$?" ]; then
 echo "-----> Deploying nginx...PATH router"
 
+TFILE="/tmp/$(basename $0).$$.tmp"
 # TODO
-cat > /home/dokku/varnish/nginx.change <<EOL
+cat > $TFILE <<EOL
 #$APP-start
     location /$APP/ {
     rewrite /$APP/(.*) /\$1 break;
@@ -29,8 +30,8 @@ cat > /home/dokku/varnish/nginx.change <<EOL
 #$APP-end
 EOL
 
-(head -n -1 $NGINX_CONF && cat /home/dokku/varnish/nginx.change && echo "}") > /home/dokku/varnish/nginx.new
-mv /home/dokku/varnish/nginx.new $NGINX_CONF && rm /home/dokku/varnish/nginx.change
+(head -n -1 $NGINX_CONF && cat $TFILE && echo "}") > "${TFILE}.1"
+mv "${TFILE}.1" $NGINX_CONF && rm $TFILE
 
 pluginhook nginx-pre-reload $APP
 echo '-----> Reloading nginx...'

@@ -3,7 +3,7 @@ dokku-path-proxy
 
 Dokku path based routing to cointainers from the default_server nginx.
 
-This plugin installs the nginx.conf as the /etc/nginx/sites_available/default configuration on the host machine.
+This plugin installs the nginx.conf as the /etc/nginx/sites-available/default configuration on the host machine.
 
 After an app is deployed a new 
     ```
