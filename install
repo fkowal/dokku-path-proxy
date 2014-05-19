@@ -1,10 +1,15 @@
 #!/usr/bin/env bash
 set -eo pipefail; [[ $DOKKU_TRACE ]] && set -x
-CONF="/etc/nginx/sites-available/default"
+CONF="/home/dokku/dokku-path-routing/nginx.conf"
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )" #this directory
 
-echo "---------->Overwriting default $CONF"
-sudo cp $DIR/nginx.conf $CONF
-sudo chown dokku.dokku $CONF
+if [ -f "/etc/nginx/sites-enabled/default" ]; then
+    echo "----------> Deleting $CONF"
+    sudo rm "/etc/nginx/sites-enabled/default"
+fi
+
+mkdir "/home/dokku/dokku-path-routing"
+echo "----------> Installing $CONF"
+cp $DIR/nginx.conf $CONF
 
 sudo /etc/init.d/nginx reload > /dev/null

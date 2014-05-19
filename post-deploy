@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 #set -eo pipefail; # i don't know how to make grep pass when running for the first time and the #$APP-start is not present in the file
-#[[ $DOKKU_TRACE ]] && set -x
+[[ $DOKKU_TRACE ]] && set -x
 
 APP="$1"; PORT="$2"
-NGINX_CONF="/etc/nginx/sites-available/default"
+NGINX_CONF="/home/dokku/dokku-path-routing/nginx.conf"
 STR="$APP-start"
+
 grep "#$STR" $NGINX_CONF > /dev/null
 
 if [ "1" = "$?" ]; then
