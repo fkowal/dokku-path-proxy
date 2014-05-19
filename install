@@ -4,12 +4,13 @@ CONF="/home/dokku/dokku-path-routing/nginx.conf"
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )" #this directory
 
 if [ -f "/etc/nginx/sites-enabled/default" ]; then
-    echo "----------> Deleting $CONF"
+    echo "----------> Deleting /etc/nginx/sites-enabled/default"
     sudo rm "/etc/nginx/sites-enabled/default"
 fi
 
 mkdir "/home/dokku/dokku-path-routing"
 echo "----------> Installing $CONF"
 cp $DIR/nginx.conf $CONF
+chown -R dokku.dokku "/home/dokku/dokku-path-routing"
 
 sudo /etc/init.d/nginx reload > /dev/null
