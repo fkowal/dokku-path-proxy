@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+#set -eo pipefail; # i don't know how to make grep pass when running for the first time and the #$APP-start is not present in the file
+#[[ $DOKKU_TRACE ]] && set -x
+
+APP="$1"; PORT="$2"
+NGINX_CONF="/etc/nginx/sites_available/default"
+STR="$APP-start"
+grep "#$STR" $NGINX_CONF > /dev/null
+
+if [ "1" = "$?" ]; then
+echo "-----> Deploying nginx...PATH router"
+
+# TODO
+cat > /home/dokku/varnish/nginx.change <<EOL
+#$APP-start
+    location /$APP/ {
+    rewrite /$APP/(.*) /\$1 break;
+    proxy_pass  http://$APP;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade \$http_upgrade;
+    proxy_set_header Connection "upgrade";
+    proxy_set_header Host \$http_host;
+    proxy_set_header X-Forwarded-Proto \$scheme;
+    proxy_set_header X-Forwarded-For \$remote_addr;
+    proxy_set_header X-Forwarded-Port \$server_port;
+    proxy_set_header X-Request-Start \$msec;
+    add_header Surrogate-Control content="ESI/1.0";
+  }
+#$APP-end
+EOL
+
+(head -n -1 $NGINX_CONF && cat /home/dokku/varnish/nginx.change && echo "}") > /home/dokku/varnish/nginx.new
+mv /home/dokku/varnish/nginx.new $NGINX_CONF && rm /home/dokku/varnish/nginx.change
+
+pluginhook nginx-pre-reload $APP
+echo '-----> Reloading nginx...'
+sudo /etc/init.d/nginx reload > /dev/null
+fi

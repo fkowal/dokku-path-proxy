@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -eo pipefail; [[ $DOKKU_TRACE ]] && set -x
+CONF="/etc/nginx/sites_available/default"
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )" #this directory
+
+echo "---------->Overwriting default $CONF"
+sudo cp $DIR/nginx.conf $CONF
+sudo chown dokku.dokku $CONF
+
+sudo /etc/init.d/nginx reload > /dev/null
