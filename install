@@ -8,9 +8,10 @@ if [ -f "/etc/nginx/sites-enabled/default" ]; then
     sudo rm "/etc/nginx/sites-enabled/default"
 fi
 
-mkdir "/home/dokku/dokku-path-routing"
+[ ! -d "/home/dokku/dokku-path-routing" ] && mkdir "/home/dokku/dokku-path-routing"
+
 echo "----------> Installing $CONF"
-cp $DIR/nginx.conf $CONF
+[ ! -f "$DIR/nginx.conf" ] && cp $DIR/nginx.conf $CONF
 chown -R dokku.dokku "/home/dokku/dokku-path-routing"
 
 sudo /etc/init.d/nginx reload > /dev/null

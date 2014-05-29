@@ -15,8 +15,8 @@ TFILE="/tmp/$(basename $0).$$.tmp"
 # TODO
 cat > $TFILE <<EOL
 #$APP-start
-    location /$APP/ {
-    rewrite /$APP/(.*) /\$1 break;
+    location ~* /.*/$APP/ {
+    rewrite /.*/$APP/(.*) /\$1 break;
     proxy_pass  http://$APP;
     proxy_http_version 1.1;
     proxy_set_header Upgrade \$http_upgrade;
