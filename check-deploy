@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+#set -eo pipefail; [[ $DOKKU_TRACE ]] && set -x
+
+CONTAINERID="$1"; APP="$2"; PORT="$3"
+NGINX_CONF="/home/dokku/dokku-path-routing/nginx.conf"
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )" #this directory
+
+# source in app env to get DOKKU_CHECKS_WAIT and any other necessary vars
+[[ -f "$DOKKU_ROOT/$APP/ENV" ]] && source $DOKKU_ROOT/$APP/ENV
+# echo "DOKKU_CHECKS_WAIT is $DOKKU_CHECKS_WAIT"
+FILENAME="$DOKKU_ROOT/$APP/dokku-path-routing.conf"
+
+echo "-----> Deploying nginx...PATH router"
+
+TMPDIR=$(mktemp -d /tmp/PATHROUTING.XXXXX)
+# choose the template and copy the template to a temp directory
+if [[ ! -f "$FILENAME" ]] ; then
+    echo "       path-routing: $FILENAME not found. attempting to retrieve it from container ..."
+    docker cp $CONTAINERID:/app/dokku-path-routing.conf $TMPDIR 2> /dev/null || true
+    if [[ ! -s "${TMPDIR}/PATHROUTING" ]] ; then
+        echo "       dokku-path-routing.conf file not found in container. applying default."
+        cp $DIR/dokku-path-routing.conf $TMPDIR
+    else
+        echo "       dokku-path-routing.conf file found in container"
+    fi
+
+    FILENAME=${TMPDIR}/dokku-path-routing.conf
+else
+    cp $FILENAME $TMPDIR
+fi
+
+function cleanup() {
+  echo "       removing dokku-path-routing file copied from container"
+  rm -rf $TMPDIR
+}
+trap cleanup EXIT
+
+
+export PORT=$PORT
+export APP=$APP
+envs=`printenv`
+# fill the template with ENV variables
+for env in $envs
+do
+    IFS== read name value <<< "$env"
+
+    sed -i "s|\$${name}|${value}|g" $FILENAME
+done
+
+#cleanup previos version
+sed -i "/#$APP-start#/,/#$APP-end#/d" $NGINX_CONF || true
+
+#add changes to configuration
+(head -n -1 $NGINX_CONF && echo "#$APP-start#" && cat $FILENAME && echo "#$APP-end#" && echo "}") > "$TMPDIR/nginx.conf"
+mv "$TMPDIR/nginx.conf" $NGINX_CONF

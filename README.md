@@ -10,4 +10,4 @@ After an app is deployed a new
     location /$APP {
     }
     ```
-is added routing this location to the deploye container.
+is added routing this location to the deployed container.
