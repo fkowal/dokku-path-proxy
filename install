@@ -11,7 +11,7 @@ fi
 [ ! -d "/home/dokku/dokku-path-routing" ] && mkdir "/home/dokku/dokku-path-routing"
 
 echo "----------> Installing $CONF"
-[ ! -f "$DIR/nginx.conf" ] && cp $DIR/nginx.conf $CONF
+[ -f "$DIR/nginx.conf" ] || cp $DIR/nginx.conf $CONF
 chown -R dokku.dokku "/home/dokku/dokku-path-routing"
 
 sudo /etc/init.d/nginx reload > /dev/null
