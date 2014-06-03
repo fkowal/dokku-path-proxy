@@ -6,11 +6,10 @@ NGINX_CONF="/home/dokku/dokku-path-routing/nginx.conf"
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )" #this directory
 
 # source in app env to get DOKKU_CHECKS_WAIT and any other necessary vars
+[[ -f "/home/dokku/dokku-path-routing/ENV" ]] && source "/home/dokku/dokku-path-routing/ENV"
 [[ -f "$DOKKU_ROOT/$APP/ENV" ]] && source $DOKKU_ROOT/$APP/ENV
 # echo "DOKKU_CHECKS_WAIT is $DOKKU_CHECKS_WAIT"
 FILENAME="$DOKKU_ROOT/$APP/dokku-path-routing.conf"
-
-echo "-----> Deploying nginx...PATH router"
 
 TMPDIR=$(mktemp -d /tmp/PATHROUTING.XXXXX)
 # choose the template and copy the template to a temp directory
@@ -38,6 +37,7 @@ trap cleanup EXIT
 
 export PORT=$PORT
 export APP=$APP
+export DOKKU_PATH_PREFIX=$DOKKU_PATH_PREFIX
 envs=`printenv`
 # fill the template with ENV variables
 for env in $envs
