@@ -44,7 +44,7 @@ for env in $envs
 do
     IFS== read name value <<< "$env"
 
-    sed -i "s|\$${name}|${value}|g" $FILENAME
+    sed -i "s|\${${name}}|${value}|g" $FILENAME
 done
 
 #cleanup previos version
