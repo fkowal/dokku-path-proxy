@@ -22,11 +22,11 @@ if [[ ! -f "$FILENAME" ]] ; then
     else
         echo "       dokku-path-routing.conf file found in container"
     fi
-
-    FILENAME=${TMPDIR}/dokku-path-routing.conf
 else
     cp $FILENAME $TMPDIR
 fi
+
+FILENAME=$TMPDIR/dokku-path-routing.conf
 
 function cleanup() {
   echo "       removing dokku-path-routing file copied from container"
