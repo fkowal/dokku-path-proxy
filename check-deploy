@@ -20,7 +20,7 @@ if [[ ! -f "$FILENAME" ]] ; then
     docker cp $CONTAINERID:/app/$DOKKU_PATH_TEMPLATE_NAME $TMPDIR 2> /dev/null || true
     if [[ ! -s "${TMPDIR}/$DOKKU_PATH_TEMPLATE_NAME" ]] ; then
         echo "       $DOKKU_PATH_TEMPLATE_NAME file not found in container. applying default."
-        cp $DIR/$NAME $TMPDIR
+        cp $DIR/$DOKKU_PATH_TEMPLATE_NAME $TMPDIR
     else
         echo "       $DOKKU_PATH_TEMPLATE_NAME file found in container"
     fi
