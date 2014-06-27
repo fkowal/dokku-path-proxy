@@ -9,6 +9,9 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )" #this directory
 [[ -f "/home/dokku/dokku-path-routing/ENV" ]] && source "/home/dokku/dokku-path-routing/ENV"
 [[ -f "$DOKKU_ROOT/$APP/ENV" ]] && source $DOKKU_ROOT/$APP/ENV
 # echo "DOKKU_CHECKS_WAIT is $DOKKU_CHECKS_WAIT"
+if [ "$DOKKU_PATH_ROUTING_DISABLED" != "" ] && [ "$DOKKU_PATH_ROUTING_ENABLED" = "" ]; then
+    exit 0
+fi
 
 DOKKU_PATH_TEMPLATE_NAME=${DOKKU_PATH_TEMPLATE_NAME:-dokku-path-routing.conf}
 FILENAME="$DOKKU_ROOT/$APP/$DOKKU_PATH_TEMPLATE_NAME"
