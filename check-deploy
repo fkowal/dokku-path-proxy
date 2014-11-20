@@ -39,6 +39,9 @@ function cleanup() {
 }
 trap cleanup EXIT
 
+if [ "$DOKKU_PATH_PREFIX" == "" ]; then
+  DOKKU_PATH_PREFIX="/";
+fi
 
 export PORT=$PORT
 export APP=$APP
